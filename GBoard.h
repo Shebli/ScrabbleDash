@@ -2,6 +2,12 @@
 #define GBOARD_H
 
 #include <QFrame>
+#include <memory>
+
+
+namespace model {
+class Board;
+}
 
 namespace Ui {
 class GBoard;
@@ -17,6 +23,7 @@ public:
 
 private:
 	Ui::GBoard *ui;
+	std::unique_ptr<model::Board> up_board;
 };
 
 #endif // GBOARD_H

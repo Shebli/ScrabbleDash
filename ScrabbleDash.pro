@@ -32,7 +32,9 @@ SOURCES += main.cpp\
     Tests.cpp \
     model/Slot.cpp \
     model/Round.cpp \
-    model/Placement.cpp
+    model/Placement.cpp \
+    GLetter.cpp \
+    GBoard.cpp
 
 HEADERS  += MainDialog.h \
     model/Board.h \
@@ -41,6 +43,10 @@ HEADERS  += MainDialog.h \
     Tests.h \
     model/Slot.h \
     model/Round.h \
-    model/Placement.h
+    model/Placement.h \
+    GLetter.h \
+    GBoard.h
 
-FORMS    += MainDialog.ui
+FORMS    += MainDialog.ui \
+    GLetter.ui \
+    GBoard.ui

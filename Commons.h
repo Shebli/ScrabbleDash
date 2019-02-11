@@ -5,7 +5,7 @@
 #include <exception>
 #include <sstream>
 
-typedef unsigned Index;
+typedef size_t Index;
 
 class Orientation
 {

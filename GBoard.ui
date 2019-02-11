@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>GBoard</class>
  <widget class="QFrame" name="GBoard">
@@ -5,12 +6,27 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>198</width>
+    <height>174</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
   </property>
+  <property name="frameShape">
+   <enum>QFrame::Box</enum>
+  </property>
+  <property name="frameShadow">
+   <enum>QFrame::Raised</enum>
+  </property>
+  <property name="lineWidth">
+   <number>3</number>
+  </property>
+  <property name="midLineWidth">
+   <number>2</number>
+  </property>
+  <layout class="QGridLayout" name="gridLayout"/>
  </widget>
+ <resources/>
+ <connections/>
 </ui>

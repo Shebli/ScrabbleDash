@@ -1,3 +1,4 @@
+#include "model/Board.h"
 #include "MainDialog.h"
 #include "ui_MainDialog.h"
 
