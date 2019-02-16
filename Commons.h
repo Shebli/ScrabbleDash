@@ -48,6 +48,15 @@ struct Commons
 	static const Index TURN_TIME_BUDGET = 180;
 };
 
+enum SlotFactor : unsigned
+{
+	REGULAR       = 1<<16 | 1,
+	LETTER_DOUBLE = 1<<16 | 2,
+	LETTER_TRIPLE = 1<<16 | 3,
+	WORD_DOUBLE	  = 2<<16 | 1,
+	WORD_TRIPLE   = 3<<16 | 1
+};
+
 class Exception : public std::exception
 {
 public:

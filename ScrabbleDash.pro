@@ -34,7 +34,9 @@ SOURCES += main.cpp\
     model/Round.cpp \
     model/Placement.cpp \
     GLetter.cpp \
-    GBoard.cpp
+    GBoard.cpp \
+    GSlot.cpp \
+    GameDash.cpp
 
 HEADERS  += MainDialog.h \
     model/Board.h \
@@ -45,8 +47,12 @@ HEADERS  += MainDialog.h \
     model/Round.h \
     model/Placement.h \
     GLetter.h \
-    GBoard.h
+    GBoard.h \
+    GSlot.h \
+    GameDash.h
 
 FORMS    += MainDialog.ui \
     GLetter.ui \
-    GBoard.ui
+    GBoard.ui \
+    GSlot.ui \
+    GameDash.ui

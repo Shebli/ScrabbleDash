@@ -35,12 +35,12 @@ Round::placement()
 bool
 Round::pushSlot(Slot& newSlot)
 {
-	for (auto p_slot : slots)
+	for (auto p_slot : slotList)
 	{
 		if (&newSlot == p_slot)
 			return false;
 	}
-	slots.push_back(&newSlot);
+	slotList.push_back(&newSlot);
 	return true;
 }
 
@@ -50,8 +50,8 @@ Round::popSlot()
 	if (slotCount() == 0)
 		return nullptr;
 
-	Slot* p_slot = slots.back();
-	slots.pop_back();
+	Slot* p_slot = slotList.back();
+	slotList.pop_back();
 	return p_slot;
 }
 

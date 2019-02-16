@@ -9,8 +9,7 @@ int main(int argc, char *argv[])
 	MainDialog w;
 	w.show();
 
-	Tests().run();
+	//Tests().run();
 
 	return a.exec();
-	return 0;
 }

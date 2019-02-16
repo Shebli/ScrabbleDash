@@ -34,14 +34,14 @@ public:
 	static char assertValid(char code_);
 
 public:
-	Letter(char code_ = JOKER_NULL, int value_ = 0);
-	char code() const { return code_; }
-	int value() const { return value_; }
+	Letter(int code_ = JOKER_NULL, int value_ = 0);
+	auto code() const { return code_; }
+	auto value() const { return value_; }
 	void validate() { assertValid(code()); }
 	bool isNull() const { return code() == JOKER_NULL; }
 
 private:
-	char code_;
+	int code_;
 	int value_;
 };
 

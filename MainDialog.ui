@@ -13,9 +13,12 @@
   <property name="windowTitle">
    <string>MainDialog</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="GBoard" name="gBoard">
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="GameDash" name="gDash">
+     <property name="styleSheet">
+      <string notr="true">background-color: rgb(187, 184, 255);</string>
+     </property>
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -29,9 +32,9 @@
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
   <customwidget>
-   <class>GBoard</class>
+   <class>GameDash</class>
    <extends>QFrame</extends>
-   <header>GBoard.h</header>
+   <header>GameDash.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

@@ -3,7 +3,7 @@
 namespace model {
 
 
-Slot::Slot(Factor factor_, Index row_, Index col_)
+Slot::Slot(SlotFactor factor_, Index row_, Index col_)
 	: row_(row_),
 	  col_(col_),
 	  factor_(factor_)
@@ -84,7 +84,7 @@ Slot::wordFactor() const
 	return factor() >> 16;
 }
 
-Slot::Factor
+SlotFactor
 Slot::factor() const
 {
 	return factor_;

@@ -23,22 +23,22 @@ public:
 	const Placement& placement() const;
 		  Placement& placement();
 		  bool isEmpty() const { return !up_placement; }
-	size_t slotCount() const { return slots.size(); }
+	size_t slotCount() const { return slotList.size(); }
 	const Slot& firstSlot() const { return placement().firstSlot; }
-	const Slot& lastSlot() const { return *slots.back(); }
+	const Slot& lastSlot() const { return *slotList.back(); }
 	Orientation orientation() const { return placement().orientation; }
 
 	bool pushSlot(Slot& newSlot);
 	Slot* popSlot();
-	auto begin() const { return slots.end(); }
-	auto end() const { return slots.end(); }
+	auto begin() const { return slotList.end(); }
+	auto end() const { return slotList.end(); }
 
 public:
 	const size_t id;
 
 private:
 	std::unique_ptr<Placement> up_placement;
-	std::deque<Slot*> slots;
+	std::deque<Slot*> slotList;
 };
 
 class Round::EmptyRoundException : Exception

@@ -9,7 +9,7 @@ Board::Board() : unusedLetters_(Letter::budgetMap, Letter::valueMap)
 	{
 		for (Index col=0; col < slotArray[row].size(); ++col)
 		{
-			Slot::Factor fact = Slot::REGULAR;
+			SlotFactor fact = REGULAR;
 			Index r{row}, c{col};
 			if (r > SIZE/2) r = SIZE - 1 - r;
 			if (c > SIZE/2) c = SIZE - 1 - c;
@@ -19,31 +19,32 @@ Board::Board() : unusedLetters_(Letter::budgetMap, Letter::valueMap)
 			case 0:
 				switch(r)
 				{
-				case 0: fact = Slot::WORD_TRIPLE; break;
-				case SIZE/2-2: fact = Slot::LETTER_TRIPLE; break;
-				case SIZE/2-1: fact = Slot::LETTER_DOUBLE; break;
-				default: fact = Slot::WORD_DOUBLE; break;
+				case 0: fact = WORD_TRIPLE; break;
+				case SIZE/2-2: fact = LETTER_TRIPLE; break;
+				case SIZE/2-1: fact = LETTER_DOUBLE; break;
+				default: fact = WORD_DOUBLE; break;
 				}
 				break;
 
 			case SIZE/3-1:
 				switch(c)
 				{
-				case 1: fact = Slot::LETTER_TRIPLE; break;
+				case 1: fact = LETTER_TRIPLE; break;
 				case 2:
-				case 3: fact = Slot::LETTER_DOUBLE; break;
+				case 3: fact = LETTER_DOUBLE; break;
 				}
 				break;
 
 			case SIZE/4:
-				if (c == 0) fact = Slot::LETTER_DOUBLE;
+				if (c == 0) fact = LETTER_DOUBLE;
 				break;
 
 			case SIZE/2:
-				if (c==0) fact = Slot::WORD_TRIPLE;
+				if (c==0) fact = WORD_TRIPLE;
 				break;
 			}
 			slotArray[row][col].reset(new Slot(fact, row, col));
+			allSlots.push_back(&slot(row,col));
 			if (row	> 0)
 			{
 				slotArray[row][col]->neighbor_[Orientation::UP] = slotArray[row-1][col].get();

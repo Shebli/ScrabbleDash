@@ -31,7 +31,7 @@ const std::map<char,Index> Letter::budgetMap
  * @param code_ ASCII code of constructed letter.
  * @param value_ Points value of constructed letter.
  */
-Letter::Letter(char code_, int value_)
+Letter::Letter(int code_, int value_)
 	: code_(code_), value_(value_)
 {
 	validate();

@@ -2,6 +2,9 @@
 #define MAINDIALOG_H
 
 #include <QDialog>
+#include <memory>
+
+class GameControl;
 
 namespace Ui {
 class MainDialog;
@@ -17,6 +20,7 @@ public:
 
 private:
 	Ui::MainDialog *ui;
+
 };
 
 #endif // MAINDIALOG_H

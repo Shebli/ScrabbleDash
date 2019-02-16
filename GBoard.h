@@ -1,13 +1,12 @@
 #ifndef GBOARD_H
 #define GBOARD_H
 
+#include "Commons.h"
 #include <QFrame>
+#include <QColor>
 #include <memory>
 
-
-namespace model {
-class Board;
-}
+class GSlot;
 
 namespace Ui {
 class GBoard;
@@ -20,10 +19,12 @@ class GBoard : public QFrame
 public:
 	explicit GBoard(QWidget *parent = nullptr);
 	~GBoard();
+	GSlot* addSlot(int row, int col);
+	const GSlot* gSlot(int row, int col) const;
+		  GSlot* gSlot(int row, int col);
 
 private:
 	Ui::GBoard *ui;
-	std::unique_ptr<model::Board> up_board;
 };
 
 #endif // GBOARD_H

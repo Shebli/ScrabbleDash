@@ -21,17 +21,8 @@ public:
 	class AlreadyPlacedException;
 	class OutOfBoundsException;
 
-	enum Factor : unsigned
-	{
-		REGULAR       = 1<<16 | 1,
-		LETTER_DOUBLE = 1<<16 | 2,
-		LETTER_TRIPLE = 1<<16 | 3,
-		WORD_DOUBLE	  = 2<<16 | 1,
-		WORD_TRIPLE   = 3<<16 | 1
-	};
-
 public:
-	explicit Slot(Factor factor_, Index row_, Index col_);
+	explicit Slot(SlotFactor factor_, Index row_, Index col_);
 	~Slot();
 
 	void placeLetter(std::unique_ptr<Letter>&& nextLetter);
@@ -44,14 +35,16 @@ public:
 
 	Index row() const;
 	Index col() const;
+	int irow() const { return static_cast<int>(row()); }
+	int icol() const { return static_cast<int>(col()); }
 	int letterFactor() const;
 	int wordFactor() const;
-	Factor factor() const;
+	SlotFactor factor() const;
 
 private:
 	Index row_;
 	Index col_;
-	Factor factor_;
+	SlotFactor factor_;
 
 	std::map<Orientation, Slot*> neighbor_;
 	std::unique_ptr<Letter> letter_;

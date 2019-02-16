@@ -38,23 +38,23 @@ Tests::printBoard() const
 			{
 				switch(slot.factor())
 				{
-				case Slot::REGULAR:
+				case REGULAR:
 					os << '.';
 					break;
 
-				case Slot::LETTER_DOUBLE:
+				case LETTER_DOUBLE:
 					os << '+';
 					break;
 
-				case Slot::LETTER_TRIPLE:
+				case LETTER_TRIPLE:
 					os << '#';
 					break;
 
-				case Slot::WORD_DOUBLE:
+				case WORD_DOUBLE:
 					os << '*';
 					break;
 
-				case Slot::WORD_TRIPLE:
+				case WORD_TRIPLE:
 					os << '$';
 					break;
 				}
