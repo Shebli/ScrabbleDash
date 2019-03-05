@@ -56,14 +56,15 @@ public:
 	Board();
 	int isize() const { return static_cast<int>(SIZE); }
 	Slot& slot(Index row, Index col);
-	void checkSlot(Index row, Index col) const;
+	void checkSlotValid(Index row, Index col) const;
 	const Slot& slot(Index row, Index col) const;
 
-	bool placeLetter(Index row, Index col, char letterCode) { return placeLetter(slot(row, col), letterCode); }
-	size_t placeString(const std::string& word);
-	Board& nextRound(const Placement& placement);
-	Board& nextRound(Index row, Index col, const Orientation& orientation);
-	Board& nextRound();
+	void placeLetter(std::unique_ptr<Letter>&& aLetter);
+	size_t placeString(const Placement& placement, const std::string& word);
+	size_t placeString(Index row, Index col, Orientation orientation, const std::string& word);
+	Round& nextRound(const Placement& placement);
+	Round& nextRound(Index row, Index col, const Orientation& orientation);
+	Round& nextRound();
 		  Round& currentRound()       { return rounds.back(); }
 	const Round& currentRound() const { return rounds.back(); }
 
@@ -76,7 +77,7 @@ public:
 	ConstSlotIterator end() const { return ConstSlotIterator(allSlots, true); }
 
 private:
-	bool placeLetter(Slot& aSlot, char letterCode);
+	void placeLetter(Slot& aSlot, std::unique_ptr<Letter>&& aLetter);
 
 private:
 	std::array< std::array<std::unique_ptr<Slot>, SIZE>, SIZE > slotArray;

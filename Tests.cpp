@@ -85,27 +85,27 @@ Tests::run()
 	printUnusedLetters();
 
 	printLine();
-	board.nextRound(7, 2, Orientation::RIGHT).placeString("Extasiez");
+	board.placeString(7, 2, Orientation::RIGHT, "Extasiez");
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.nextRound(7, 15, Orientation::RIGHT).placeString("TRACAS"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
+	try { board.placeString(7, 15, Orientation::RIGHT, "TRACAS"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.nextRound(10, 10, Orientation::DOWN).placeString("eminent"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
+	try { board.placeString(10, 10, Orientation::DOWN, "eminent"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.nextRound(6, 2, Orientation::DOWN).placeString("MRCI"); } catch (const Slot::AlreadyPlacedException& e) { print(e.what()); }
+	try { board.placeString(6, 2, Orientation::DOWN, "MRCI"); } catch (const Slot::AlreadyPlacedException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.nextRound(8, 0, Orientation::RIGHT).placeString("DOMEZ"); } catch (const Letter::Set::NoMoreLetterException& e) { print(e.what()); }
+	try { board.placeString(8, 0, Orientation::RIGHT, "DOMEZ"); } catch (const Letter::Set::NoMoreLetterException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 }

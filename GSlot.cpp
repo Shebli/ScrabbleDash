@@ -2,6 +2,7 @@
 #include "ui_GSlot.h"
 #include "GLetter.h"
 #include <iostream>
+#include <QMouseEvent>
 
 GSlot::GSlot(int row, int col, QWidget *parent)
 	: QFrame(parent),
@@ -38,9 +39,27 @@ GSlot::gLetter()
 	return findChild<GLetter*>("GLetter");
 }
 
-void
-GSlot::mousePressEvent(QMouseEvent *)
+bool
+GSlot::isEmpty() const
 {
-	std::cout << "GSlot click" << std::endl;
-	emit clicked(row, col);
+	return gLetter() == nullptr or gLetter()->code() == ' ';
+}
+
+void
+GSlot::mousePressEvent(QMouseEvent *mouseEvent)
+{
+	switch (mouseEvent->button())
+	{
+	case Qt::RightButton:
+		emit clicked(row, col, false);
+		break;
+
+	case Qt::LeftButton:
+		emit clicked(row, col, true);
+		break;
+
+	default:
+		/* Nothing */
+		break;
+	}
 }

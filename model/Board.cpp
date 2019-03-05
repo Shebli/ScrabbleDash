@@ -2,6 +2,10 @@
 
 namespace model {
 
+/**
+ * @brief Board::Board Constructs a new board with all its 15x15 slots.
+ *        Each slot is initialized with the right bonus factor corresponding to a classic Scrabble board.
+ */
 Board::Board() : unusedLetters_(Letter::budgetMap, Letter::valueMap)
 {
 	// Setting up board
@@ -59,8 +63,15 @@ Board::Board() : unusedLetters_(Letter::budgetMap, Letter::valueMap)
 	}
 }
 
+/**
+ * @brief Board::checkSlot Makes sure that the specified row and column correspond to an actual slot on the board.
+ * @param row Row number, the first row corresponding to number 0.
+ * @param col Column number, the first row corresponding to number 0.
+ * @throws OutOfBoundsException if the location specified by the row and column values is outside the board.
+ * @throws UninitializedException if the slot location on the board had not been initilized with an actual Slot instance.
+ */
 void
-Board::checkSlot(Index row, Index col) const
+Board::checkSlotValid(Index row, Index col) const
 {
 	if (row >= slotArray.size() or col >= slotArray[row].size())
 		throw Slot::OutOfBoundsException(row, col);
@@ -69,74 +80,128 @@ Board::checkSlot(Index row, Index col) const
 		throw Slot::UninitializedException(row, col);
 }
 
+/**
+ * @brief Board::slot Returns a reference to the slot occupying the specified position on the board.
+ * @param row Row number of the slot.
+ * @param col Column number of the slot.
+ * @return Reference to the slot if it exists.
+ * @throws OutOfBoundsException if the location specified by the row and column values is outside the board.
+ * @throws UninitializedException if the slot location on the board had not been initilized with an actual Slot instance.
+ */
 Slot&
 Board::slot(Index row, Index col)
 {
-	checkSlot(row, col);
+	checkSlotValid(row, col);
 	return *slotArray[row][col];
 }
 
 const Slot&
 Board::slot(Index row, Index col) const
 {
-	checkSlot(row, col);
+	checkSlotValid(row, col);
 	return *slotArray[row][col];
 }
 
-size_t
-Board::placeString(const std::string& word)
+/**
+ * @brief Board::placeLetter Places specified letter on current slot in round.
+ * @param aLetter The code of the letter to be placed.
+ * @throws Slot::AlreadyPlacedException If current slot in round is already occupied by a letter.
+ * @throws Round::EmptyException if board's current round has no placement defined yet.
+ */
+void Board::placeLetter(std::unique_ptr<Letter>&& aLetter)
 {
-	auto row = currentRound().lastSlot().row();
-	auto col = currentRound().lastSlot().col();
-	std::cout << "Placing '" << word << "' at (" << row << "," << col << ") "
-			  << (currentRound().orientation() == Orientation::RIGHT ? "Horizontally" : "Vertically") << std::endl;
-
-	size_t placed = 0;
-	try
-	{
-		for (auto letterCode : word)
-		{
-			for (bool isPlaced = false; not isPlaced; currentRound().orientation().incr(row, col))
-			{
-				isPlaced = placeLetter(row, col, letterCode);
-			}
-			placed++;
-		}
-	}
-	catch (const Slot::OutOfBoundsException&)
-	{
-	}
-	return placed;
+	placeLetter(currentRound().currentSlot(), std::move(aLetter));
 }
 
-Board&
+/**
+ * @brief Board::placeString Creates a new round and places all the letters of a string at specified placement.
+ *        The string is placed only if the placement slot is not already occupied.
+ *        Every letter is placed only if the current slot is not yet occupied. If occupied the next slot is tried.
+ *	      The letters are placed up to the point where the board limit is reached, in which case the placement stops.
+ * @param placement the slot and orientation used to place the string letters.
+ * @param word the string whose letters are placed.
+ * @return the number of letters actually placed.
+ * @throws Slot::AlreadyPlacedException If placement is already occupied by a letter.
+ * @throws Slot::NoMoreLetterException if the word contains a letter that is no longer available in the game.
+ */
+size_t
+Board::placeString(const Placement& placement, const std::string& word)
+{
+	size_t nPlaced = 0;
+	nextRound(placement); // If placement already occupied exception is thrown.
+	auto it_letterCode = word.begin();
+	while (not currentRound().isFull()
+		   and it_letterCode != word.end()
+		   and unusedLetters().count(*it_letterCode)
+		   )
+	{
+		if (not currentRound().currentSlot().isPlaced())
+		{
+			placeLetter(unusedLetters().retrieveLetter(*it_letterCode));
+			nPlaced++;
+			++it_letterCode;
+		}
+		currentRound().pushSlot();
+	}
+	return nPlaced;
+}
+
+/**
+ * @brief Board::placeString See overloaded placeString function.
+ */
+size_t
+Board::placeString(Index row, Index col, Orientation orientation, const std::string& word)
+{
+	return placeString(Placement(slot(row, col), orientation), word);
+}
+
+/**
+ * @brief Board::nextRound The current round is closed and a new one is opened.
+ * @param placement The placement with which the new round begins.
+ * @return A reference to the new round.
+ * @throws Slot::AlreadyPlacedException If specified placement is already occupied by a letter.
+ */
+Round&
 Board::nextRound(const Placement& placement)
 {
 	rounds.push_back(Round(rounds.size(), placement));
-	return *this;
+	return currentRound();
 }
 
-Board&
+/**
+ * @brief Board::nextRound The current round is closed and a new one is opened.
+ * @param row The row number at which the new round begins.
+ * @param col The column number at which the new round begins.
+ * @return A reference to the new round.
+ * @throws Slot::AlreadyPlacedException If specified placement is already occupied by a letter.
+ */
+Round&
 Board::nextRound(Index row, Index col, const Orientation& orientation)
 {
 	return nextRound(Placement(slot(row, col), orientation));
 }
 
-Board&
+/**
+ * @brief Board::nextRound The current round is closed and a new one is opened.
+ *        The new round is empty as it has no placement defined yet.
+ * @return A reference to the new round.
+ */
+Round&
 Board::nextRound()
 {
 	rounds.push_back(Round(rounds.size()));
-	return *this;
+	return currentRound();
 }
 
-bool
-Board::placeLetter(Slot& aSlot, char letterCode)
+/**
+ * @brief Board::placeLetter Places specified letter at specified slot.
+ * @param aSlot The slot where the letter is placed.
+ * @param aLetter The letter to be placed.
+ * @throws Slot::AlreadyPlacedException If specified slot is already occupied by a letter.
+ */
+void Board::placeLetter(Slot& aSlot, std::unique_ptr<Letter>&& aLetter)
 {
-	if (aSlot.isPlaced())
-		return false;
-
-	aSlot.placeLetter(unusedLetters().retrieveLetter(letterCode));
-	return true;
+		aSlot.placeLetter(std::move(aLetter), currentRound());
 }
 
 } // namespace model

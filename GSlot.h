@@ -22,15 +22,15 @@ public:
 	void placeLetter(int letterCode, int letterValue);
 	const GLetter* gLetter() const;
 		  GLetter* gLetter();
-		  bool isEmpty() const { return gLetter() == nullptr; }
+		  bool isEmpty() const;
 
 		  QString uid() const { return uid(row, col); }
 
 signals:
-	void clicked(int row, int col);
+	void clicked(int row, int col, bool isLeftButton = true);
 
 protected:
-	void mousePressEvent(QMouseEvent *) override;
+	void mousePressEvent(QMouseEvent* mouseEvent) override;
 
 public:
 	static QString uid(int row, int col) { return QStringLiteral("GSlot-")+QString::number(row)+"-"+QString::number(col); }

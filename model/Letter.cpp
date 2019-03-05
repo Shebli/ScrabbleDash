@@ -12,14 +12,14 @@
 
 namespace model {
 
-const std::map<char,int> Letter::valueMap
+const std::map<Letter::Code, Letter::Value> Letter::valueMap
 {
 	{'A', 1}, {'B', 3}, {'C', 3}, {'D', 2}, {'E', 1}, {'F', 4}, {'G', 2}, {'H', 4}, {'I', 1}, {'J', 8},
 	{'K',10}, {'L', 1}, {'M', 2}, {'N', 1}, {'O', 1}, {'P', 3}, {'Q', 8}, {'R', 1}, {'S', 1}, {'T', 1},
 	{'U', 1}, {'V', 4}, {'W',10}, {'X',10}, {'Y',10}, {'Z',10}, {JOKER_CHAR, 0}
 };
 
-const std::map<char,Index> Letter::budgetMap
+const std::map<Letter::Code, Index> Letter::budgetMap
 {
 	{'A', 9}, {'B', 2}, {'C', 2}, {'D', 3}, {'E',15}, {'F', 2}, {'G', 2}, {'H', 2}, {'I', 8}, {'J', 1},
 	{'K', 1}, {'L', 5}, {'M', 3}, {'N', 6}, {'O', 6}, {'P', 2}, {'Q', 1}, {'R', 6}, {'S', 6}, {'T', 6},
@@ -31,7 +31,7 @@ const std::map<char,Index> Letter::budgetMap
  * @param code_ ASCII code of constructed letter.
  * @param value_ Points value of constructed letter.
  */
-Letter::Letter(int code_, int value_)
+Letter::Letter(Letter::Code code_, Value value_)
 	: code_(code_), value_(value_)
 {
 	validate();
@@ -42,10 +42,10 @@ Letter::Letter(int code_, int value_)
  * @param code_ ASCII code of the letter to be checked.
  * @return Upper case of code_
  */
-char
-Letter::toupper(char code_)
+Letter::Code
+Letter::toupper(Letter::Code code_)
 {
-	return static_cast<char>(std::toupper(code_));
+	return static_cast<Letter::Code>(std::toupper(code_));
 }
 
 /**
@@ -53,8 +53,8 @@ Letter::toupper(char code_)
  * @param code_ ASCII code of the letter to be checked.
  * @return capitalized (upper case) version of code_
  */
-char
-Letter::assertValid(char code_)
+Letter::Code
+Letter::assertValid(Letter::Code code_)
 {
 	code_ = toupper(code_);
 	if (budgetMap.find(toupper(code_)) == budgetMap.end())
@@ -86,96 +86,104 @@ Letter::Set::Set(const BudgetMap& budgetMap_, const ValueMap& valueMap_)
  * @param letterValue The points value of the added letter.
  */
 void
-Letter::Set::addLetter(char letterCode, int letterValue)
+Letter::Set::addLetter(Code letterCode, Value letterValue)
 {
 	letterCode = assertValid(letterCode);
-	if (letters[letterCode] == nullptr)
-	{
-		letterQueues.push_back(std::make_unique<Letter::Queue>());
-		letters[letterCode] = letterQueues.back().get();
-	}
-	letters[letterCode]->push_back(std::make_unique<Letter>(letterCode, letterValue));
-}
-
-/**
- * @brief Letter::Set::addLetter Adds a new letter and its value to the board letter map.
- * @param letterCode The ASCII code of the letter to be added.
- * @param letterValue The points value of the added letter.
- */
-void
-Letter::Set::addLetter(std::unique_ptr<Letter>&& aLetter)
-{
-	if (!aLetter)
-	{
-
-		if (letters[aLetter->code()] == nullptr)
-		{
-			letterQueues.push_back(std::make_unique<Letter::Queue>());
-			letters[aLetter->code()] = letterQueues.back().get();
-		}
-		letters[aLetter->code()]->push_back(std::move(aLetter));
-	}
+	letters.emplace(letterCode, std::make_unique<Letter>(letterCode, letterValue));
 }
 
 /**
  * @brief Letter::Set::letterCount returns the number of remaining letters.
  * @param letterCode The code of the letter whose count is to be returned.
- * @return If the letterCode parameter belongs to the letters map, the remaining number of letters corresponding to that
- *        code is returned; if letterCode is the default value JOKER_NULL, the total number of remaining letters is returned;
- *        in all other cases an InvalidCharException is thrown.
+ * @return the remaining number of letters corresponding to letterCode.
  */
 Index
-Letter::Set::count(char letterCode) const
+Letter::Set::count(Letter::Code letterCode) const
 {
-	Index count = 0;
-	if (letterCode == JOKER_NULL)
-	{
-		for (auto it : letters)
-		{
-			count += it.second->size();
-		}
-	}
-	else
-	{
-		letterCode = assertValid(letterCode);
-		auto it = letters.find(letterCode);
-		if (it != letters.end())
-			count = it->second->size(); // Size of the remaining letters list.
-	}
-	return count;
+	return letters.count(letterCode);
+}
+
+/**
+ * @brief Letter::Set::letterCount returns the number of remaining letters.
+ * @param letterCode The code of the letter whose count is to be returned.
+ * @return the total number of remaining letters is returned.
+ */
+Index
+Letter::Set::count() const
+{
+	return letters.size();
 }
 
 /**
  * @brief Letter::Set::retrieveLetter Retrieves specified letter from board letter map.
  * @param letterCode ASCII code of the letter to be retrieved.
  * @return The retrieved letter if there was any such letter in the set.
- * @throws NoMoreCharException if there are no more letters with specified ASCII code; InvalidCharException if letterCode
- *         is invalid.
+ * @throws NoMoreCharException if there are no more letters with specified ASCII code; InvalidCharException if
+ *         letterCode is invalid.
  */
 std::unique_ptr<Letter>
-Letter::Set::retrieveLetter(char letterCode)
+Letter::Set::retrieveLetter(Letter::Code letterCode)
 {
 	letterCode = assertValid(letterCode);
 	auto it = letters.find(letterCode);
 
-	if (it->second->size() == 0)
+	if (it == letters.end())
 		throw NoMoreLetterException(letterCode);
 
-	std::unique_ptr<Letter> theLetter = std::move(it->second->back());
-	it->second->pop_back();
+	std::unique_ptr<Letter> theLetter(it->second.release());
+	letters.erase(it);
 	return theLetter;
+}
+
+/**
+ * @brief Letter::Set::putBackLetter Puts back letter that was refused for placement on board.
+ *        This may happen because there was an attempt to place the letter on a non-empty slot.
+ * @param unplacedLetter The letter that should be put back into the letter set.
+ */
+void
+Letter::Set::putBackLetter(std::unique_ptr<Letter>&& unplacedLetter)
+{
+	if (unplacedLetter)
+	{
+		auto code = unplacedLetter->code();
+		letters.emplace(code, std::move(unplacedLetter));
+	}
+}
+
+/**
+ * @brief Letter::Set::operator []
+ * @param idx The index of the letter to be referenced
+ * @return A const reference to the i-th letter (modulo the number of letters left) of the letter set.
+ * @throw NoMoreLetterException if there are no letters left.
+ */
+const Letter&
+Letter::Set::operator [] (Index idx)
+{
+	if (count() != 0)
+	{
+		idx = idx % count();
+		for (const auto& l : letters)
+		{
+			if (idx-- == 0)
+			{
+				return *l.second;
+			}
+		}
+	}
+	throw NoMoreLetterException();
 }
 
 void
 Letter::InvalidCharException::fillStream(std::ostream& os) const noexcept
 {
-	os << "Attempt to set Letter with invalid character: '\\0x" << std::hex<< (static_cast<int>(code)) << "'";
+	os << "Attempt to set Letter with invalid character: '" << std::dec << static_cast<int>(code)
+	   << std::hex << "' (" << static_cast<int>(code) << ")";
 }
 
 void
 Letter::Set::NoMoreLetterException::fillStream(std::ostream& os) const noexcept
 {
-	os << "No more letters left with code: '" << code << "' (\\0x" << std::hex<< (static_cast<int>(code)) << ")";
+	os << "No more '" << static_cast<char>(code) << "' letters left";
 }
 
 } // namespace model

@@ -17,7 +17,9 @@ public:
 	bool operator== (const Orientation& o) const { return key_==o.key(); }
 	bool operator< (const Orientation& o) const { return key_ < o.key(); }
 	int key() const { return key_; }
-	void incr(Index& row, Index& col) const;
+
+	template<typename T>
+	void incr(T& row, T& col) const;
 
 public:
 	static const int ORKEY_RIGHT = 0;
@@ -37,6 +39,29 @@ private:
 	static const int cmplment[];
 	static const int opposite[];
 };
+
+template<typename T>
+void Orientation::incr(T& row, T& col) const
+{
+	switch (key())
+	{
+	case ORKEY_DOWN:
+		++row;
+		break;
+
+	case ORKEY_RIGHT:
+		++col;
+		break;
+
+	case ORKEY_UP:
+		--row;
+		break;
+
+	case ORKEY_LEFT:
+		--col;
+		break;
+	}
+}
 
 std::ostream& operator<< (std::ostream& os, const Orientation& orientation);
 

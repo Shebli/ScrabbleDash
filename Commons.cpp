@@ -7,30 +7,6 @@ const Orientation Orientation::UP(Orientation::ORKEY_UP);
 const Orientation Orientation::LEFT(Orientation::ORKEY_LEFT);
 const Orientation Orientation::DOWN(Orientation::ORKEY_DOWN);
 
-void
-Orientation::incr(Index& row, Index& col) const
-{
-	switch (key())
-	{
-	case ORKEY_DOWN:
-		++row;
-		break;
-
-	case ORKEY_RIGHT:
-		++col;
-		break;
-
-	case ORKEY_UP:
-		--row;
-		break;
-
-	case ORKEY_LEFT:
-		--col;
-		break;
-	}
-}
-
-
 std::ostream&
 operator<< (std::ostream& os, const Orientation& orientation)
 {

@@ -24,7 +24,7 @@ public:
 	~GameDash();
 
 public slots:
-	void slotClicked(int row, int col);
+	void slotClicked(int row, int col, bool isLeftButton);
 
 private:
 	Ui::GameDash *ui;

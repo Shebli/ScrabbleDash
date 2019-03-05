@@ -3,7 +3,6 @@
 
 #include "Commons.h"
 #include <map>
-#include <deque>
 #include <memory>
 
 namespace model {
@@ -11,17 +10,18 @@ namespace model {
 class Letter
 {
 public:
+	typedef int Code;
+	typedef int Value;
 	class Set;
 	class InvalidCharException;
-	typedef std::map<char,int> ValueMap;
-	typedef std::map<char,Index> BudgetMap;
-	typedef std::deque<std::unique_ptr<Letter>> Queue;
+	typedef std::map<Code,Value> ValueMap;
+	typedef std::map<Code,Index> BudgetMap;
 
 public:
 	/// This chat value represents the 'Joker" Scrabble letter
-	static const char JOKER_CHAR = '*';
-	static const char JOKER_PLACED = '.';
-	static const char JOKER_NULL = '\0';
+	static const Code JOKER_CHAR = '*';
+	static const Code JOKER_PLACED = '.';
+	static const Code JOKER_NULL = '\0';
 
 	/// This is the map of the number of value points attributed to each Scrabble letter.
 	static const ValueMap valueMap;
@@ -30,19 +30,20 @@ public:
 	static const BudgetMap budgetMap;
 
 public:
-	static char toupper(char code_);
-	static char assertValid(char code_);
+	static Code toupper(Code code_);
+	static Code assertValid(Code code_);
 
 public:
-	Letter(int code_ = JOKER_NULL, int value_ = 0);
+	Letter(Code code_ = JOKER_NULL, Value value_ = 0);
 	auto code() const { return code_; }
 	auto value() const { return value_; }
+	char charCode() const { return  static_cast<char>(code()); }
 	void validate() { assertValid(code()); }
 	bool isNull() const { return code() == JOKER_NULL; }
 
 private:
-	int code_;
-	int value_;
+	Code code_;
+	Value value_;
 };
 
 class Letter::Set
@@ -52,34 +53,35 @@ public:
 
 public:
 	Set(const BudgetMap& budgetMap_ = Letter::budgetMap, const ValueMap& valueMap_ = Letter::valueMap);
-	Index count(char letterCode = JOKER_NULL) const;
-	void addLetter(char letterCode, int letterValue);
-	void addLetter(std::unique_ptr<Letter>&& aLetter);
-	std::unique_ptr<Letter> retrieveLetter(char letterCode);
+	Index count(Code letterCode) const;
+	Index count() const;
+	void addLetter(Code letterCode, Value letterValue);
+	std::unique_ptr<Letter> retrieveLetter(Code letterCode);
+	void putBackLetter(std::unique_ptr<Letter>&& unplacedLetter);
+	const Letter& operator [] (Index i);
 
 private:
-	std::deque<std::unique_ptr<Letter::Queue>> letterQueues;
-	std::map<char, Letter::Queue*> letters;
+	std::multimap<Code, std::unique_ptr<Letter>> letters;
 };
 
 class Letter::InvalidCharException : public Exception
 {
 public:
-	explicit InvalidCharException(char code) : code(code) {}
+	explicit InvalidCharException(Code code) : code(code) {}
 	void fillStream(std::ostream& os) const noexcept;
 
 public:
-	const char code;
+	const Code code;
 };
 
 class Letter::Set::NoMoreLetterException : public Exception
 {
 public:
-	explicit NoMoreLetterException(char code) : code(code) {}
+	explicit NoMoreLetterException(Code code = Letter::JOKER_NULL) : code(code) {}
 	void fillStream(std::ostream& os) const noexcept;
 
 public:
-	const char code;
+	const Code code;
 };
 
 } // namespace model

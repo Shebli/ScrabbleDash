@@ -6,7 +6,8 @@ namespace model {
 Slot::Slot(SlotFactor factor_, Index row_, Index col_)
 	: row_(row_),
 	  col_(col_),
-	  factor_(factor_)
+	  factor_(factor_),
+	  placementRound_(nullptr)
 {
 	neighbor_[ Orientation::RIGHT ] = nullptr;
 	neighbor_[ Orientation::UP    ] = nullptr;
@@ -19,25 +20,59 @@ Slot::~Slot()
 }
 
 void
-Slot::placeLetter(std::unique_ptr<Letter>&& nextLetter)
+Slot::checkNotPlaced() const
 {
 	if (isPlaced())
-		throw AlreadyPlacedException(row(), col(), std::move(nextLetter));
-
-	letter_ = std::move(nextLetter);
-	std::cout << "Placed letter '" << letter().code() << "' at slot (" << row() << "," << col() << ")" << std::endl;
+		throw AlreadyPlacedException(row(), col());
 }
 
-Slot*
+void
+Slot::checkIsPlaced() const
+{
+	if (not isPlaced())
+		throw NotPlacedException(row(), col());
+}
+
+void
+Slot::checkHasNeighbor(Orientation orientation) const
+{
+	if (not hasNeighbor(orientation))
+		throw OutOfBoundsException(row(), col());
+}
+
+void
+Slot::placeLetter(std::unique_ptr<Letter>&& aLetter, const Round& aRound)
+{
+	try
+	{
+		checkNotPlaced();
+	}
+	catch (AlreadyPlacedException& e) // rethrow exception with the failed letter.
+	{
+		throw AlreadyPlacedException(e.row, e.col, std::move(aLetter));
+	}
+
+	letter_ = std::move(aLetter);
+	placementRound_ = &aRound;
+}
+
+bool
+Slot::hasNeighbor(Orientation orientation) const
+{
+	auto itNeighbor = neighbor_.find(orientation);
+	return itNeighbor != neighbor_.end() and itNeighbor->second != nullptr;
+}
+
+Slot&
 Slot::neighbor(const Orientation& orientation)
 {
-	return neighbor_.at(orientation);
+	return *neighbor_.at(orientation);
 }
 
-const Slot*
+const Slot&
 Slot::neighbor(const Orientation& orientation) const
 {
-	return neighbor_.at(orientation);
+	return *neighbor_.at(orientation);
 }
 
 bool
@@ -46,17 +81,11 @@ Slot::isPlaced() const
 	return letter_ and not letter().isNull();
 }
 
-bool
-Slot::hasNeighbor(Orientation orientation) const
-{
-	return neighbor_.find(orientation) != neighbor_.end();
-}
-
 const Letter&
 Slot::letter() const
 {
 	if (!letter_)
-		throw Slot::EmptyException(row(), col()) ;
+		throw Slot::NotPlacedException(row(), col()) ;
 
 	return *letter_;
 }
@@ -101,7 +130,7 @@ Slot::UninitializedException::fillStream(std::ostream& os) const noexcept
 }
 
 void
-Slot::EmptyException::fillStream(std::ostream& os) const noexcept
+Slot::NotPlacedException::fillStream(std::ostream& os) const noexcept
 {
 	os << "Slot[" << row << "," << col << "] is empty";
 }

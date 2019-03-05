@@ -20,7 +20,7 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 249, 215);
+   <string notr="true">background-color: rgb(255, 249, 215, 0);
 color: rgb(127, 127, 127);</string>
   </property>
   <property name="frameShape">

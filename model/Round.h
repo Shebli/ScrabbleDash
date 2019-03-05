@@ -14,23 +14,26 @@ class Slot;
 class Round
 {
 public:
-	class EmptyRoundException;
+	class EmptyException;
 
 public:
 	Round(size_t id);
 	Round(size_t id, const Placement& placement_);
+	void reset();
+	void reset(const Placement& placement_);
 
 	const Placement& placement() const;
 		  Placement& placement();
-		  bool isEmpty() const { return !up_placement; }
+	bool isEmpty() const { return !up_placement; }
+	bool isFull() const { return isFull_; }
+	void checkNotEmpty() const;
 	size_t slotCount() const { return slotList.size(); }
-	const Slot& firstSlot() const { return placement().firstSlot; }
-	const Slot& lastSlot() const { return *slotList.back(); }
 	Orientation orientation() const { return placement().orientation; }
 
-	bool pushSlot(Slot& newSlot);
-	Slot* popSlot();
-	auto begin() const { return slotList.end(); }
+	Slot& currentSlot() { checkNotEmpty(); return *slotList.back(); }
+	bool pushSlot();
+	Slot& popSlot();
+	auto begin() const { return slotList.begin(); }
 	auto end() const { return slotList.end(); }
 
 public:
@@ -39,12 +42,13 @@ public:
 private:
 	std::unique_ptr<Placement> up_placement;
 	std::deque<Slot*> slotList;
+	bool isFull_;
 };
 
-class Round::EmptyRoundException : Exception
+class Round::EmptyException : Exception
 {
 public:
-	explicit EmptyRoundException(size_t numRound) : roundId(numRound) {}
+	explicit EmptyException(size_t numRound) : roundId(numRound) {}
 	void fillStream(std::ostream& os) const noexcept override;
 
 public:

@@ -10,6 +10,8 @@
 
 namespace model {
 
+class Round;
+
 class Slot
 {
 	friend class Board;
@@ -17,7 +19,7 @@ class Slot
 public:
 	class Exception;
 	class UninitializedException;
-	class EmptyException;
+	class NotPlacedException;
 	class AlreadyPlacedException;
 	class OutOfBoundsException;
 
@@ -25,11 +27,14 @@ public:
 	explicit Slot(SlotFactor factor_, Index row_, Index col_);
 	~Slot();
 
-	void placeLetter(std::unique_ptr<Letter>&& nextLetter);
-		  Slot* neighbor(const Orientation& orientation);
-	const Slot* neighbor(const Orientation& orientation) const;
-	bool isPlaced() const;
+	void checkNotPlaced() const;
+	void checkIsPlaced() const;
+	void checkHasNeighbor(Orientation orientation) const;
+	void placeLetter(std::unique_ptr<Letter>&& aLetter, const Round& aRound);
 	bool hasNeighbor(Orientation orKey) const;
+		  Slot& neighbor(const Orientation& orientation);
+	const Slot& neighbor(const Orientation& orientation) const;
+	bool isPlaced() const;
 
 	const Letter& letter() const;
 
@@ -41,10 +46,13 @@ public:
 	int wordFactor() const;
 	SlotFactor factor() const;
 
+	const Round& placementRound() const { checkIsPlaced(); return *placementRound_; }
+
 private:
 	Index row_;
 	Index col_;
 	SlotFactor factor_;
+	const Round* placementRound_;
 
 	std::map<Orientation, Slot*> neighbor_;
 	std::unique_ptr<Letter> letter_;
@@ -68,20 +76,20 @@ public:
 	void fillStream(std::ostream& os) const noexcept override;
 };
 
-class Slot::EmptyException : public Slot::Exception
+class Slot::NotPlacedException : public Slot::Exception
 {
 public:
-	explicit EmptyException(Index row, Index col) : Slot::Exception(row, col) {}
+	explicit NotPlacedException(Index row, Index col) : Slot::Exception(row, col) {}
 	void fillStream(std::ostream& os) const noexcept override;
 };
 
 class Slot::AlreadyPlacedException : public Slot::Exception
 {
 public:
-	explicit AlreadyPlacedException(Index row, Index col, std::unique_ptr<Letter>&& aLetter)
-		: Slot::Exception(row, col), letter(std::move(aLetter)) {}
+	explicit AlreadyPlacedException(Index row, Index col, std::unique_ptr<Letter>&& aLetter = std::unique_ptr<Letter>())
+		: Slot::Exception(row, col), refusedLetter(std::move(aLetter)) {}
 	void fillStream(std::ostream& os) const noexcept override;
-	std::unique_ptr<Letter> letter;
+	std::unique_ptr<Letter> refusedLetter;
 };
 
 class Slot::OutOfBoundsException : public Slot::Exception
