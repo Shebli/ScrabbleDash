@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>58</width>
-    <height>61</height>
+    <width>56</width>
+    <height>57</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -20,34 +20,71 @@
    <string>Frame</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-color: rgb(255, 249, 215, 0);
+   <string notr="true">background-color: rgb(255, 249, 215);
 color: rgb(127, 127, 127);</string>
   </property>
   <property name="frameShape">
-   <enum>QFrame::Box</enum>
+   <enum>QFrame::Panel</enum>
   </property>
   <property name="frameShadow">
-   <enum>QFrame::Plain</enum>
+   <enum>QFrame::Raised</enum>
   </property>
   <property name="lineWidth">
-   <number>1</number>
+   <number>3</number>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
+  <property name="midLineWidth">
+   <number>0</number>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="rightMargin">
-    <number>0</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
     <number>0</number>
    </property>
+   <property name="spacing">
+    <number>0</number>
+   </property>
+   <item row="1" column="1">
+    <widget class="QLabel" name="valueGlyph">
+     <property name="styleSheet">
+      <string notr="true">font: 25 8pt &quot;Fira Sans Light&quot;;
+color: rgb(50, 50, 50);</string>
+     </property>
+     <property name="text">
+      <string>10</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignBottom|Qt::AlignLeading|Qt::AlignLeft</set>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="2">
+    <widget class="QLabel" name="letterGlyph">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 57 30pt &quot;Fira Sans Medium&quot;;
+color: rgb(50, 50, 50);</string>
+     </property>
+     <property name="text">
+      <string>W</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignCenter</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

@@ -25,7 +25,6 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
-        MainDialog.cpp \
     model/Board.cpp \
     Commons.cpp \
     model/Letter.cpp \
@@ -36,9 +35,10 @@ SOURCES += main.cpp\
     GLetter.cpp \
     GBoard.cpp \
     GSlot.cpp \
-    GameDash.cpp
+    GameDash.cpp \
+    MonitorPane.cpp
 
-HEADERS  += MainDialog.h \
+HEADERS  += \
     model/Board.h \
     Commons.h \
     model/Letter.h \
@@ -49,10 +49,12 @@ HEADERS  += MainDialog.h \
     GLetter.h \
     GBoard.h \
     GSlot.h \
-    GameDash.h
+    GameDash.h \
+    MonitorPane.h
 
-FORMS    += MainDialog.ui \
+FORMS    += \
     GLetter.ui \
     GBoard.ui \
     GSlot.ui \
-    GameDash.ui
+    GameDash.ui \
+    MonitorPane.ui

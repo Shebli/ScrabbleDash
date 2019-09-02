@@ -18,7 +18,7 @@ class GSlot : public QFrame
 
 public:
 	explicit GSlot(int row, int col, QWidget *parent = nullptr);
-	~GSlot();
+	~GSlot() override;
 	void placeLetter(int letterCode, int letterValue);
 	const GLetter* gLetter() const;
 		  GLetter* gLetter();

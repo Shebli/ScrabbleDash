@@ -42,7 +42,7 @@ GSlot::gLetter()
 bool
 GSlot::isEmpty() const
 {
-	return gLetter() == nullptr or gLetter()->code() == ' ';
+	return gLetter() == nullptr;
 }
 
 void

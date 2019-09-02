@@ -11,13 +11,16 @@
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>Frame</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">background-color: rgb(231, 240, 231);</string>
   </property>
   <property name="frameShape">
    <enum>QFrame::Box</enum>
@@ -36,16 +39,16 @@
     <number>0</number>
    </property>
    <property name="leftMargin">
-    <number>2</number>
+    <number>3</number>
    </property>
    <property name="topMargin">
-    <number>2</number>
+    <number>3</number>
    </property>
    <property name="rightMargin">
-    <number>2</number>
+    <number>3</number>
    </property>
    <property name="bottomMargin">
-    <number>2</number>
+    <number>3</number>
    </property>
   </layout>
  </widget>

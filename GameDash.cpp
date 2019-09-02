@@ -5,27 +5,34 @@
 #include "GSlot.h"
 #include <QRandomGenerator>
 #include <iostream>
+#include <algorithm>
 
 typedef model::Letter::Set::NoMoreLetterException NoMoreLetterException;
 
-GameDash::GameDash(QWidget *parent) :
+GameDash::GameDash(const QSize& screenSize, QWidget *parent) :
 	QFrame(parent),
 	ui(new Ui::GameDash),
+	screenScale(std::min(screenSize.width(), screenSize.height())),
+	boardLetterFont(QStringLiteral("Fira Sans Medium"), screenScale * 24 / 1024),
+	paneLetterFont(QStringLiteral("Fira Sans Medium"), screenScale * 10 / 1024),
+	valueFont(QStringLiteral("Fira Sans Light"), screenScale * 8 / 1024),
 	up_board(new model::Board)
 {
 	ui->setupUi(this);
+	ui->monitorPane->setLetterFont(paneLetterFont);
 
 	gSlots.resize(up_board->isize());
 	for (auto& v : gSlots)
 		v.resize(up_board->isize());
 
+	// Populate board with all its letter slots
 	for (auto& slot : *up_board)
 	{
 		auto gSlot = ui->boardPane->addSlot(slot.irow(), slot.icol());
 		switch (slot.factor())
 		{
 		case REGULAR:
-			gSlot->setStyleSheet(QStringLiteral("background-color: rgb(255, 255, 255);"));
+			// Keep default background color
 			break;
 
 		case LETTER_DOUBLE:
@@ -44,13 +51,20 @@ GameDash::GameDash(QWidget *parent) :
 			gSlot->setStyleSheet(QStringLiteral("background-color: rgb(218, 74, 74);"));
 			break;
 		}
-		std::cout << "Connecting GSlot::clicked() to (" <<  gSlot->row << "," << gSlot->col << ")" << std::endl;
+		// Connecting every board slot click to GameDash::slotClicked
 		connect(gSlot, SIGNAL(clicked(int, int, bool)), this, SLOT(slotClicked(int, int, bool)));
+
+		// Keeping reference to every graphical board slot in GameDash
 		gSlots[slot.irow()][slot.icol()] = gSlot;
 
-		// Populate board with empty letters
-		gSlots[slot.irow()][slot.icol()]->placeLetter(' ', 0);
+		// gSlots[slot.irow()][slot.icol()]->placeLetter('W', 10);
 	}
+
+	// Populate board monitor with all letters
+
+
+	// Connect application Quit button.
+	connect(ui->quitButton, SIGNAL(clicked()), this, SLOT(close()));
 }
 
 GameDash::~GameDash()
