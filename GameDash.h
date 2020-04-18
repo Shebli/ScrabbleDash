@@ -1,6 +1,7 @@
 #ifndef GAMEDASH_H
 #define GAMEDASH_H
 
+#include <Commons.h>
 #include <QFrame>
 #include <memory>
 #include <QVector>
@@ -24,6 +25,7 @@ class GameDash : public QFrame
 public:
 	explicit GameDash(const QSize& screenSize, QWidget *parent = nullptr);
 	~GameDash();
+	static Index bounded(Index upperLimit);
 
 public slots:
 	void slotClicked(int row, int col, bool isLeftButton);

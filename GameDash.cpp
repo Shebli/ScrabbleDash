@@ -72,6 +72,11 @@ GameDash::~GameDash()
 	delete ui;
 }
 
+Index GameDash::bounded(Index upperLimit)
+{
+	return QRandomGenerator::global()->bounded(static_cast<quint32>(upperLimit));
+}
+
 void
 GameDash::slotClicked(int row, int col, bool isLeftButton)
 {
@@ -80,7 +85,7 @@ GameDash::slotClicked(int row, int col, bool isLeftButton)
 	auto orientation = isLeftButton ? Orientation::DOWN : Orientation::RIGHT;
 	std::cout << (orientation == Orientation::DOWN ? "V" : "H") << std::dec << "(" << urow << "," << ucol << ") : ";
 
-	auto wordLength = 1+QRandomGenerator::global()->bounded(Commons::MAX_LETTERS_PER_TURN);
+	auto wordLength = 1+bounded(Commons::MAX_LETTERS_PER_TURN);
 	if (wordLength > up_board->unusedLetters().count())
 		wordLength = up_board->unusedLetters().count();
 
@@ -92,7 +97,7 @@ GameDash::slotClicked(int row, int col, bool isLeftButton)
 			std::vector<int> values;
 			while (wordLength-- > 0)
 			{
-				auto iLetter = QRandomGenerator::global()->bounded(up_board->unusedLetters().count());
+				auto iLetter = bounded(up_board->unusedLetters().count());
 				auto randCode = up_board->unusedLetters()[iLetter].code();
 				newWord.push_back(static_cast<char>(randCode));
 				values.push_back(up_board->unusedLetters()[iLetter].value());
