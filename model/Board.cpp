@@ -130,10 +130,12 @@ Board::placeString(const Placement& placement, const std::string& word)
 	size_t nPlaced = 0;
 	nextRound(placement); // If placement already occupied exception is thrown.
 	auto it_letterCode = word.begin();
-	while (not currentRound().isFull()
-		   and it_letterCode != word.end()
-		   and unusedLetters().count(*it_letterCode)
-		   )
+	while
+	(
+	   not currentRound().isFull()
+	   and it_letterCode != word.end()
+	   and unusedLetters().count(*it_letterCode) > 0
+	)
 	{
 		if (not currentRound().currentSlot().isPlaced())
 		{

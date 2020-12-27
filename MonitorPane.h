@@ -14,15 +14,26 @@ class MonitorPane : public QFrame
 	Q_OBJECT
 
 public:
-	explicit MonitorPane(QWidget *parent = nullptr);
-	~MonitorPane();
-
-	MonitorPane& setLetterFont(const QFont& letterFont_) { letterFont = letterFont_; return *this; }
-	QLabel* getLetter(int iLetter);
-	QLabel* addLetter(int letterCode, int iLetter);
+	static const int N_ROWS =  3;
+	static const int N_COLS = 34;
+	static const QLatin1String STYLE_STRING;
 
 public:
-	static QString uid(int iLetter) { return QStringLiteral("gLetter_")+QString::number(iLetter); }
+	explicit MonitorPane(QWidget *parent = nullptr);
+	~MonitorPane();
+	QLabel* getLetter(int row, int col);
+	QLabel* setLetter(int letterCode, int row, int col);
+	MonitorPane& setLetterFont(const QFont& letterFont_);
+
+public slots:
+	void resetLetters();
+	void resetLetter(int letterCode, int row, int col);
+
+public:
+	static QString uid(int row, int col)
+	{
+		return QStringLiteral("gLetter_")+QString::number(col + row*N_COLS);
+	}
 
 private:
 	Ui::MonitorPane *ui;

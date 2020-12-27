@@ -60,11 +60,9 @@ GameDash::GameDash(const QSize& screenSize, QWidget *parent) :
 		// gSlots[slot.irow()][slot.icol()]->placeLetter('W', 10);
 	}
 
-	// Populate board monitor with all letters
-
-
 	// Connect application Quit button.
 	connect(ui->quitButton, SIGNAL(clicked()), this, SLOT(close()));
+	connect(ui->testButton, SIGNAL(clicked()), ui->monitorPane, SLOT(resetLetters()));
 }
 
 GameDash::~GameDash()

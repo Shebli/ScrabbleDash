@@ -1,8 +1,17 @@
 #include "GSlot.h"
 #include "ui_GSlot.h"
 #include "GLetter.h"
-#include <iostream>
 #include <QMouseEvent>
+#include <sstream>
+#include <iomanip>
+
+QString
+GSlot::uid(int row, int col)
+{
+	std::ostringstream oss;
+	oss << "GSlot_" << std::dec << std::setfill('0') << std::setw(2) << row << "-" << std::setw(2) << col;
+	return QString::fromStdString(oss.str());
+}
 
 GSlot::GSlot(int row, int col, QWidget *parent)
 	: QFrame(parent),

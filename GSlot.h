@@ -2,9 +2,7 @@
 #define GSLOT_H
 
 #include <QFrame>
-#include <QColor>
 #include <QString>
-#include "Commons.h"
 
 class GLetter;
 
@@ -15,6 +13,9 @@ class GSlot;
 class GSlot : public QFrame
 {
 	Q_OBJECT
+
+public:
+	static QString uid(int row, int col);
 
 public:
 	explicit GSlot(int row, int col, QWidget *parent = nullptr);
@@ -31,9 +32,6 @@ signals:
 
 protected:
 	void mousePressEvent(QMouseEvent* mouseEvent) override;
-
-public:
-	static QString uid(int row, int col) { return QStringLiteral("GSlot-")+QString::number(row)+"-"+QString::number(col); }
 
 public:
 	const int row;
