@@ -1,4 +1,5 @@
 #include "Slot.h"
+#include <iostream>
 
 namespace model {
 
@@ -40,8 +41,8 @@ Slot::checkHasNeighbor(Orientation orientation) const
 		throw OutOfBoundsException(row(), col());
 }
 
-void
-Slot::placeLetter(std::unique_ptr<Letter>&& aLetter, const Round& aRound)
+const Letter&
+Slot::placeLetter(Letter::Token&& aLetter, const Round& aRound)
 {
 	try
 	{
@@ -52,15 +53,30 @@ Slot::placeLetter(std::unique_ptr<Letter>&& aLetter, const Round& aRound)
 		throw AlreadyPlacedException(e.row, e.col, std::move(aLetter));
 	}
 
-	letter_ = std::move(aLetter);
+	m_letter = std::move(aLetter);
 	placementRound_ = &aRound;
+	return *m_letter;
 }
 
-bool
-Slot::hasNeighbor(Orientation orientation) const
+Letter::Token
+Slot::removeLetter()
+{
+	placementRound_ = nullptr;
+	return std::move(m_letter);
+}
+
+Slot*
+Slot::searchNeighbor(const Orientation& orientation)
 {
 	auto itNeighbor = neighbor_.find(orientation);
-	return itNeighbor != neighbor_.end() and itNeighbor->second != nullptr;
+	return (itNeighbor == neighbor_.end() or itNeighbor->second == nullptr) ? nullptr : itNeighbor->second;
+}
+
+const Slot*
+Slot::searchNeighbor(const Orientation& orientation) const
+{
+	auto itNeighbor = neighbor_.find(orientation);
+	return (itNeighbor == neighbor_.end() or itNeighbor->second == nullptr) ? nullptr : itNeighbor->second;
 }
 
 Slot&
@@ -78,16 +94,21 @@ Slot::neighbor(const Orientation& orientation) const
 bool
 Slot::isPlaced() const
 {
-	return letter_ and not letter().isNull();
+	std::cout << "---" << irow() << "," << icol() << ":";
+	if (!m_letter)
+		std::cout << "{NULL}";
+	else std::cout << letter();
+	std::cout << std::endl;
+	return m_letter.get() != nullptr and not letter().isNull();
 }
 
 const Letter&
 Slot::letter() const
 {
-	if (!letter_)
+	if (!m_letter)
 		throw Slot::NotPlacedException(row(), col()) ;
 
-	return *letter_;
+	return *m_letter;
 }
 
 Index
@@ -138,7 +159,7 @@ Slot::NotPlacedException::fillStream(std::ostream& os) const noexcept
 void
 Slot::AlreadyPlacedException::fillStream(std::ostream& os) const noexcept
 {
-	os << "Slot[" << row << "," << col << "] is not empty";
+	os << "Slot[" << row << "," << col << "] is not empty (contains letter " << *refusedLetter << ")" << std::endl;
 }
 
 void
@@ -148,3 +169,12 @@ Slot::OutOfBoundsException::fillStream(std::ostream& os) const noexcept
 }
 
 } // namespace model
+
+std::ostream& operator<< (std::ostream& os, const model::Slot& aSlot)
+{
+	os << "[" << aSlot.irow() << "," << aSlot.icol() << "," << aSlot.factor();
+	if (aSlot.isPlaced()) os << aSlot.letter();
+	else os << model::Letter();
+	os << "]";
+	return os;
+}

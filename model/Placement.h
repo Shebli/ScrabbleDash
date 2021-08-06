@@ -2,6 +2,7 @@
 #define model_Placement_h_INCLUDED
 
 #include "Commons.h"
+#include <ostream>
 
 namespace model
 {
@@ -18,7 +19,8 @@ public:
 	Orientation orientation;
 };
 
-
 } // namespace model
+
+std::ostream& operator<< (std::ostream& os, const model::Placement& placement);
 
 #endif // model_Placement_h_INCLUDED

@@ -9,3 +9,9 @@ Placement::Placement(Slot& firstSlot, Orientation orientation)
 }
 
 } // namespace model
+
+std::ostream& operator<< (std::ostream& os, const model::Placement& placement)
+{
+	os << placement.firstSlot << placement.orientation;
+	return os;
+}

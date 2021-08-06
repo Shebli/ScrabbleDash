@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <memory>
+#include <ostream>
 
 namespace model {
 
@@ -30,8 +31,11 @@ public:
 	void checkNotPlaced() const;
 	void checkIsPlaced() const;
 	void checkHasNeighbor(Orientation orientation) const;
-	void placeLetter(std::unique_ptr<Letter>&& aLetter, const Round& aRound);
-	bool hasNeighbor(Orientation orKey) const;
+	const Letter& placeLetter(Letter::Token&& aLetter, const Round& aRound);
+	Letter::Token removeLetter();
+		  Slot* searchNeighbor(const Orientation& orientation);
+	const Slot* searchNeighbor(const Orientation& orientation) const;
+	bool hasNeighbor(Orientation orKey) const { return searchNeighbor(orKey) != nullptr; }
 		  Slot& neighbor(const Orientation& orientation);
 	const Slot& neighbor(const Orientation& orientation) const;
 	bool isPlaced() const;
@@ -55,7 +59,7 @@ private:
 	const Round* placementRound_;
 
 	std::map<Orientation, Slot*> neighbor_;
-	std::unique_ptr<Letter> letter_;
+	Letter::Token m_letter;
 };
 
 class Slot::Exception : public ::Exception
@@ -86,10 +90,10 @@ public:
 class Slot::AlreadyPlacedException : public Slot::Exception
 {
 public:
-	explicit AlreadyPlacedException(Index row, Index col, std::unique_ptr<Letter>&& aLetter = std::unique_ptr<Letter>())
+	explicit AlreadyPlacedException(Index row, Index col, Letter::Token&& aLetter = Letter::Token())
 		: Slot::Exception(row, col), refusedLetter(std::move(aLetter)) {}
 	void fillStream(std::ostream& os) const noexcept override;
-	std::unique_ptr<Letter> refusedLetter;
+	Letter::Token refusedLetter;
 };
 
 class Slot::OutOfBoundsException : public Slot::Exception
@@ -100,5 +104,7 @@ public:
 };
 
 } // namespace model
+
+std::ostream& operator<< (std::ostream& os, const model::Slot& aSlot);
 
 #endif // model_Slot_h_INCLUDED
