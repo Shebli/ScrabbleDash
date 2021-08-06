@@ -51,39 +51,23 @@ public:
 
 public:
 	static const Index SIZE{Commons::MAX_LETTERS_PER_WORD};
+	static bool isSlotCentral(Index row, Index col) { return SIZE%2==1 and row==((SIZE-1)/2) and col==((SIZE-1)/2); }
+	static bool isSlotCentral(const Slot& slot) { return isSlotCentral(slot.row(), slot.col()); }
 
 public:
 	Board();
 	int isize() const { return static_cast<int>(SIZE); }
-	Slot& slot(Index row, Index col);
-	void checkSlotValid(Index row, Index col) const;
+		  Slot& slot(Index row, Index col);
 	const Slot& slot(Index row, Index col) const;
-
-	void placeLetter(std::unique_ptr<Letter>&& aLetter);
-	size_t placeString(const Placement& placement, const std::string& word);
-	size_t placeString(Index row, Index col, Orientation orientation, const std::string& word);
-	Round& nextRound(const Placement& placement);
-	Round& nextRound(Index row, Index col, const Orientation& orientation);
-	Round& nextRound();
-		  Round& currentRound()       { return rounds.back(); }
-	const Round& currentRound() const { return rounds.back(); }
-
-		  Letter::Set& unusedLetters()       { return unusedLetters_; }
-	const Letter::Set& unusedLetters() const { return unusedLetters_; }
-	size_t roundCount() const { return rounds.size(); }
+	void checkSlotValid(Index row, Index col) const;
 	SlotIterator begin() { return SlotIterator(allSlots); }
 	ConstSlotIterator begin() const { return ConstSlotIterator(allSlots); }
 	SlotIterator end() { return SlotIterator(allSlots, true); }
 	ConstSlotIterator end() const { return ConstSlotIterator(allSlots, true); }
 
 private:
-	void placeLetter(Slot& aSlot, std::unique_ptr<Letter>&& aLetter);
-
-private:
 	std::array< std::array<std::unique_ptr<Slot>, SIZE>, SIZE > slotArray;
 	std::deque<Slot*> allSlots;
-	Letter::Set unusedLetters_;
-	std::deque<Round> rounds;
 };
 
 } // namespace model

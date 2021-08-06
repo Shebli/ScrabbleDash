@@ -24,15 +24,15 @@ Tests::printLine() const
 void
 Tests::printBoard() const
 {
-	os << "Round " << board.roundCount() << std::endl;
+	os << "Round " << game.roundCount() << std::endl;
 	for (Index row=0; row < Board::SIZE; ++row)
 	{
 		for (Index col=0; col < Board::SIZE; ++col)
 		{
-			auto& slot = board.slot(row, col);
+			auto& slot = game.board().slot(row, col);
 			if (slot.isPlaced())
 			{
-				os << board.slot(row, col).letter().code();
+				os << game.board().slot(row, col).letter().code();
 			}
 			else
 			{
@@ -68,12 +68,12 @@ Tests::printBoard() const
 void
 Tests::printUnusedLetters() const
 {
-	os << "Remaining letters: " << board.unusedLetters().count() << std::endl;
+	os << "Remaining letters: " << game.letterPool().count() << std::endl;
 	for (auto c='A'; c <= 'Z'; ++c)
 	{
-		os << c << ':' << board.unusedLetters().count(c) << ' ';
+		os << c << ':' << game.letterPool().count(c) << ' ';
 	}
-	os << Letter::JOKER_CHAR << ':' << board.unusedLetters().count(Letter::JOKER_CHAR);
+	os << Letter::JOKER_CHAR << ':' << game.letterPool().count(Letter::JOKER_CHAR);
 	os << std::endl;
 }
 
@@ -85,27 +85,27 @@ Tests::run()
 	printUnusedLetters();
 
 	printLine();
-	board.placeString(7, 2, Orientation::RIGHT, "Extasiez");
+	game.pushNewRound(7, 2, Orientation::RIGHT).placeString("Extasiez");
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.placeString(7, 15, Orientation::RIGHT, "TRACAS"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
+	try { game.pushNewRound(7, 15, Orientation::RIGHT).placeString("TRACAS"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.placeString(10, 10, Orientation::DOWN, "eminent"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
+	try { game.pushNewRound(10, 10, Orientation::DOWN).placeString("eminent"); } catch (const Slot::OutOfBoundsException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.placeString(6, 2, Orientation::DOWN, "MRCI"); } catch (const Slot::AlreadyPlacedException& e) { print(e.what()); }
+	try { game.pushNewRound(6, 2, Orientation::DOWN).placeString("MRCI"); } catch (const Slot::AlreadyPlacedException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 
 	printLine();
-	try { board.placeString(8, 0, Orientation::RIGHT, "DOMEZ"); } catch (const Letter::Set::NoMoreLetterException& e) { print(e.what()); }
+	try { game.pushNewRound(8, 0, Orientation::RIGHT).placeString("DOMEZ"); } catch (const Letter::Pool::NoMoreLetterException& e) { print(e.what()); }
 	printBoard();
 	printUnusedLetters();
 }

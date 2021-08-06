@@ -1,7 +1,7 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#include "model/Board.h"
+#include "model/Game.h"
 #include <iostream>
 
 class Tests
@@ -16,7 +16,7 @@ public:
 
 private:
 	std::ostream& os;
-	model::Board board;
+	model::Game game;
 };
 
 #endif // TESTS_H

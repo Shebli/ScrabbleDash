@@ -4,21 +4,23 @@
 #include "Commons.h"
 #include <map>
 #include <memory>
+#include <ostream>
 
 namespace model {
 
 class Letter
 {
 public:
-	typedef int Code;
-	typedef int Value;
-	class Set;
+	using Code = int;
+	using Value = int;
+	using Token = std::unique_ptr<Letter>;
+	class Pool;
 	class InvalidCharException;
-	typedef std::map<Code,Value> ValueMap;
-	typedef std::map<Code,Index> BudgetMap;
+	using ValueMap = std::map<Code,Value>;
+	using BudgetMap = std::map<Code,Index>;
 
 public:
-	/// This chat value represents the 'Joker" Scrabble letter
+	/// This char value represents the 'Joker" Scrabble letter
 	static const Code JOKER_CHAR = '*';
 	static const Code JOKER_PLACED = '.';
 	static const Code JOKER_NULL = '\0';
@@ -31,37 +33,39 @@ public:
 
 public:
 	static Code toupper(Code code_);
-	static Code assertValid(Code code_);
+	static Code assertValid(Code code_, bool allowNull = false);
 
 public:
-	Letter(Code code_ = JOKER_NULL, Value value_ = 0);
+	explicit Letter(Code code_ = JOKER_NULL, Value value_ = 0);
 	auto code() const { return code_; }
 	auto value() const { return value_; }
 	char charCode() const { return  static_cast<char>(code()); }
-	void validate() { assertValid(code()); }
-	bool isNull() const { return code() == JOKER_NULL; }
+	void validate() { assertValid(code(), true); }
+	bool isNull() const { return code() == JOKER_NULL or code() == JOKER_PLACED; }
 
 private:
 	Code code_;
 	Value value_;
 };
 
-class Letter::Set
+class Letter::Pool
 {
 public:
 	class NoMoreLetterException;
 
 public:
-	Set(const BudgetMap& budgetMap_ = Letter::budgetMap, const ValueMap& valueMap_ = Letter::valueMap);
+	Pool(const BudgetMap& budgetMap_ = Letter::budgetMap, const ValueMap& valueMap_ = Letter::valueMap);
 	Index count(Code letterCode) const;
 	Index count() const;
 	void addLetter(Code letterCode, Value letterValue);
-	std::unique_ptr<Letter> retrieveLetter(Code letterCode);
-	void putBackLetter(std::unique_ptr<Letter>&& unplacedLetter);
-	const Letter& operator [] (Index i);
+	Token retrieveLetter(Code letterCode);
+	bool isAvailable(Code letterCode);
+	void checkAvailable(Code letterCode);
+	const Letter& putBackLetter(Token&& unplacedLetter);
+	const Letter& operator [] (Index i) const;
 
 private:
-	std::multimap<Code, std::unique_ptr<Letter>> letters;
+	std::multimap<Code, Letter::Token> letters;
 };
 
 class Letter::InvalidCharException : public Exception
@@ -74,7 +78,7 @@ public:
 	const Code code;
 };
 
-class Letter::Set::NoMoreLetterException : public Exception
+class Letter::Pool::NoMoreLetterException : public Exception
 {
 public:
 	explicit NoMoreLetterException(Code code = Letter::JOKER_NULL) : code(code) {}
@@ -85,5 +89,7 @@ public:
 };
 
 } // namespace model
+
+std::ostream& operator<< (std::ostream& os, const model::Letter& aLetter);
 
 #endif // model_Letter_h_INCLUDED

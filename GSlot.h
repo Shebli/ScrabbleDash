@@ -5,8 +5,8 @@
 #include <QColor>
 #include <QString>
 #include "Commons.h"
-
-class GLetter;
+#include "MonitorPane.h"
+#include "GLetter.h"
 
 namespace Ui {
 class GSlot;
@@ -19,7 +19,9 @@ class GSlot : public QFrame
 public:
 	explicit GSlot(int row, int col, QWidget *parent = nullptr);
 	~GSlot() override;
-	void placeLetter(int letterCode, int letterValue);
+	void placeLetter(int letterCode = GLetter::CHAR_PLACEHOLDER, int letterValue = 0);
+	void placeLetter(MonitorPane::Letter& monLetter, int letterValue);
+	void removeLetter();
 	const GLetter* gLetter() const;
 		  GLetter* gLetter();
 		  bool isEmpty() const;

@@ -21,10 +21,22 @@ GSlot::~GSlot()
 void
 GSlot::placeLetter(int letterCode, int letterValue)
 {
+	removeLetter();
+	ui->verticalLayout->addWidget(new GLetter(letterCode, letterValue, this));
+}
+
+void
+GSlot::placeLetter(MonitorPane::Letter& monLetter, int letterValue)
+{
+	removeLetter();
+	ui->verticalLayout->addWidget(new GLetter(monLetter, letterValue, this));
+}
+
+void
+GSlot::removeLetter()
+{
 	if (gLetter() != nullptr)
 		delete gLetter();
-
-	ui->verticalLayout->addWidget(new GLetter(letterCode, letterValue, this));
 }
 
 const GLetter*
@@ -51,10 +63,12 @@ GSlot::mousePressEvent(QMouseEvent *mouseEvent)
 	switch (mouseEvent->button())
 	{
 	case Qt::RightButton:
+		std::cout << "GSlot clicked RIGHT: " << row << "," << col << std::endl;
 		emit clicked(row, col, false);
 		break;
 
 	case Qt::LeftButton:
+		std::cout << "GSlot clicked LEFT: " << row << "," << col << std::endl;
 		emit clicked(row, col, true);
 		break;
 

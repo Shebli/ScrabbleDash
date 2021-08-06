@@ -95,5 +95,6 @@ private:
 	mutable std::string msg_;
 };
 
+std::ostream& operator<< (std::ostream& os, SlotFactor slotFactor);
 
 #endif // Commons_h_INCLUDED

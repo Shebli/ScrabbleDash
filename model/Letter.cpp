@@ -54,12 +54,14 @@ Letter::toupper(Letter::Code code_)
  * @return capitalized (upper case) version of code_
  */
 Letter::Code
-Letter::assertValid(Letter::Code code_)
+Letter::assertValid(Letter::Code code_, bool allowNull)
 {
 	code_ = toupper(code_);
 	if (budgetMap.find(toupper(code_)) == budgetMap.end())
-		throw InvalidCharException(code_);
-
+	{
+		if (code_ != JOKER_NULL or not allowNull)
+			throw InvalidCharException(code_);
+	}
 	return code_;
 }
 
@@ -68,7 +70,7 @@ Letter::assertValid(Letter::Code code_)
  * @param budgetMap_ Map specifying the total available number of every letter in a single game.
  * @param valueMap_ Map specifying for each letter its points value.
  */
-Letter::Set::Set(const BudgetMap& budgetMap_, const ValueMap& valueMap_)
+Letter::Pool::Pool(const BudgetMap& budgetMap_, const ValueMap& valueMap_)
 {
 	for (auto it : budgetMap_)
 	{
@@ -86,7 +88,7 @@ Letter::Set::Set(const BudgetMap& budgetMap_, const ValueMap& valueMap_)
  * @param letterValue The points value of the added letter.
  */
 void
-Letter::Set::addLetter(Code letterCode, Value letterValue)
+Letter::Pool::addLetter(Code letterCode, Value letterValue)
 {
 	letterCode = assertValid(letterCode);
 	letters.emplace(letterCode, std::make_unique<Letter>(letterCode, letterValue));
@@ -98,7 +100,7 @@ Letter::Set::addLetter(Code letterCode, Value letterValue)
  * @return the remaining number of letters corresponding to letterCode.
  */
 Index
-Letter::Set::count(Letter::Code letterCode) const
+Letter::Pool::count(Letter::Code letterCode) const
 {
 	return letters.count(letterCode);
 }
@@ -109,7 +111,7 @@ Letter::Set::count(Letter::Code letterCode) const
  * @return the total number of remaining letters is returned.
  */
 Index
-Letter::Set::count() const
+Letter::Pool::count() const
 {
 	return letters.size();
 }
@@ -117,12 +119,12 @@ Letter::Set::count() const
 /**
  * @brief Letter::Set::retrieveLetter Retrieves specified letter from board letter map.
  * @param letterCode ASCII code of the letter to be retrieved.
- * @return The retrieved letter if there was any such letter in the set.
- * @throws NoMoreCharException if there are no more letters with specified ASCII code; InvalidCharException if
- *         letterCode is invalid.
+ * @return The retrieved letter token if there was any such letter in the set.
+ * @throws NoMoreLetterException if there are no more letters with specified ASCII code;
+ *         InvalidCharException if letterCode is invalid.
  */
-std::unique_ptr<Letter>
-Letter::Set::retrieveLetter(Letter::Code letterCode)
+Letter::Token
+Letter::Pool::retrieveLetter(Letter::Code letterCode)
 {
 	letterCode = assertValid(letterCode);
 	auto it = letters.find(letterCode);
@@ -130,24 +132,35 @@ Letter::Set::retrieveLetter(Letter::Code letterCode)
 	if (it == letters.end())
 		throw NoMoreLetterException(letterCode);
 
-	std::unique_ptr<Letter> theLetter(it->second.release());
+	Letter::Token theLetter(it->second.release());
 	letters.erase(it);
 	return theLetter;
+}
+
+bool
+Letter::Pool::isAvailable(Code letterCode)
+{
+	return count(letterCode) > 0;
+}
+
+void
+Letter::Pool::checkAvailable(Code letterCode)
+{
+	if (not isAvailable(letterCode))
+		throw NoMoreLetterException(letterCode);
 }
 
 /**
  * @brief Letter::Set::putBackLetter Puts back letter that was refused for placement on board.
  *        This may happen because there was an attempt to place the letter on a non-empty slot.
+ * @return Reference to the letter that was returned to the pool.
  * @param unplacedLetter The letter that should be put back into the letter set.
  */
-void
-Letter::Set::putBackLetter(std::unique_ptr<Letter>&& unplacedLetter)
+const Letter&
+Letter::Pool::putBackLetter(Letter::Token&& unplacedLetter)
 {
-	if (unplacedLetter)
-	{
-		auto code = unplacedLetter->code();
-		letters.emplace(code, std::move(unplacedLetter));
-	}
+	auto code = unplacedLetter->code();
+	return *letters.emplace(code, std::move(unplacedLetter))->second;
 }
 
 /**
@@ -157,7 +170,7 @@ Letter::Set::putBackLetter(std::unique_ptr<Letter>&& unplacedLetter)
  * @throw NoMoreLetterException if there are no letters left.
  */
 const Letter&
-Letter::Set::operator [] (Index idx)
+Letter::Pool::operator [] (Index idx) const
 {
 	if (count() != 0)
 	{
@@ -181,9 +194,19 @@ Letter::InvalidCharException::fillStream(std::ostream& os) const noexcept
 }
 
 void
-Letter::Set::NoMoreLetterException::fillStream(std::ostream& os) const noexcept
+Letter::Pool::NoMoreLetterException::fillStream(std::ostream& os) const noexcept
 {
 	os << "No more '" << static_cast<char>(code) << "' letters left";
 }
 
 } // namespace model
+
+std::ostream& operator<< (std::ostream&  os, const model::Letter& aLetter)
+{
+	os << "{";
+	if (aLetter.code() != model::Letter::JOKER_NULL)
+		os << aLetter.charCode() << ":" << aLetter.value();
+	else os << '0';
+	os << "}";
+	return os;
+}

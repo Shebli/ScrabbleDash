@@ -25,8 +25,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 
 SOURCES += main.cpp\
+    GBoardControl.cpp \
+    GStencil.cpp \
     model/Board.cpp \
     Commons.cpp \
+    model/Game.cpp \
     model/Letter.cpp \
     Tests.cpp \
     model/Slot.cpp \
@@ -39,8 +42,11 @@ SOURCES += main.cpp\
     MonitorPane.cpp
 
 HEADERS  += \
+    GBoardControl.h \
+    GStencil.h \
     model/Board.h \
     Commons.h \
+    model/Game.h \
     model/Letter.h \
     Tests.h \
     model/Slot.h \
@@ -53,8 +59,10 @@ HEADERS  += \
     MonitorPane.h
 
 FORMS    += \
+    GBoardControl.ui \
     GLetter.ui \
     GBoard.ui \
     GSlot.ui \
+    GStencil.ui \
     GameDash.ui \
     MonitorPane.ui

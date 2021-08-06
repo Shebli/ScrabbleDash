@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>380</width>
-    <height>286</height>
+    <width>984</width>
+    <height>681</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
     <number>0</number>
    </property>
    <item row="1" column="0">
-    <widget class="GBoard" name="boardPane">
+    <widget class="GBoardControl" name="boardControl">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
        <horstretch>0</horstretch>
@@ -142,15 +142,15 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>GBoard</class>
-   <extends>QFrame</extends>
-   <header>GBoard.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>MonitorPane</class>
    <extends>QFrame</extends>
    <header location="global">MonitorPane.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GBoardControl</class>
+   <extends>QFrame</extends>
+   <header>GBoardControl.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
